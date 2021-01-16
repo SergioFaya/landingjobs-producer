@@ -1,0 +1,26 @@
+{
+	"name": "landingjobs-producer",
+	"version": "1.0.0",
+	"description": "Producer that gets the landing jobs api jobs and sends them into a kafka topic",
+	"main": "dist/index.js",
+	"scripts": {
+		"start": "rimraf dist && tsc && node dist/index.js",
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"clean": "rimraf dist"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+ssh://git@github.com/SergioFaya/landingjobs-producer.git"
+	},
+	"author": "SergioFaya",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/SergioFaya/landingjobs-producer/issues"
+	},
+	"homepage": "https://github.com/SergioFaya/landingjobs-producer#readme",
+	"devDependencies": {
+		"rimraf": "^3.0.2",
+		"tslint": "^5.12.1",
+		"typescript": "^3.3.3"
+	}
+}
