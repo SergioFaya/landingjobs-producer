@@ -18,12 +18,15 @@ export async function getLandingJobsData(): Promise<LandingJobsJob[]> {
 
 async function getCompanies(): Promise<LandingJobsCompany[]> {
 	const params: LandingJobsApiParams = { offset: 0 }
-	const companies: LandingJobsCompany[] = []
+	let companies: LandingJobsCompany[] = []
 
-	const response = await axios.get<LandingJobsCompany[]>(COMPANIES_URL, { params })
+	var response = await axios.get<LandingJobsCompany[]>(COMPANIES_URL, { params })
 	while (response.data.length != 0) {
-		companies.concat(response.data)
+		companies = companies.concat(response.data)
 		params.offset += MAX_LIMIT_RESULTS_API;
+		response = await axios.get<LandingJobsCompany[]>(COMPANIES_URL, { params })
+		// FIXME: Remove log
+		console.log(companies)
 	}
 	return companies
 }
@@ -32,12 +35,15 @@ async function getJobsOfCompanies(companies: LandingJobsCompany[]): Promise<Land
 	const companyIds = companies.map(company => company.id);
 
 	const params: LandingJobsApiParams = { offset: 0 }
-	const jobs: LandingJobsJob[] = []
+	let jobs: LandingJobsJob[] = []
 
-	const response = await axios.get<LandingJobsJob[]>(JOBS_URL, { params })
+	var response = await axios.get<LandingJobsJob[]>(JOBS_URL, { params })
 	while (response.data.length != 0) {
-		jobs.concat(response.data)
+		jobs = jobs.concat(response.data)
 		params.offset += MAX_LIMIT_RESULTS_API;
+		response = await axios.get<LandingJobsJob[]>(JOBS_URL, { params })
+		// FIXME: Remove log
+		console.log(jobs)
 	}
 	return jobs
 }
