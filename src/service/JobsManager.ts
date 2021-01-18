@@ -1,49 +1,57 @@
 import axios, { AxiosResponse } from "axios";
 import { LandingJobsApiParams, MAX_LIMIT_RESULTS_API } from "../entity/LandingJobsApiParams";
 import { LandingJobsJob } from "../entity/LandingJobsJob";
+import { LandingJobsJobWithCompanyName } from "../entity/LandingJobsJobWithCompanyName";
 
 /**
  * Gets the information about the jobs and companies
  */
 
-const JOBS_URL = "https://landing.jobs/api/v1/jobs"
-const COMPANIES_URL = "https://landing.jobs/api/v1/companies"
+const COMPANIES_URL_JOBS = "/jobs"
+const COMPANIES_URL = "https://landing.jobs/api/v1/companies/"
 
 
-export async function getLandingJobsData(): Promise<LandingJobsJob[]> {
-	const companies: LandingJobsCompany[] = await getCompanies();
-	return await getJobsOfCompanies(companies);
+
+export async function getCompanies(params: LandingJobsApiParams): Promise<LandingJobsCompany[]> {
+	return await (await axios.get<LandingJobsCompany[]>(COMPANIES_URL, { params })).data
 }
 
+export async function getJobsOfCompanies(companies: LandingJobsCompany[], params: LandingJobsApiParams): Promise<LandingJobsJobWithCompanyName[]> {
+	let jobs: LandingJobsJobWithCompanyName[] = []
+	for (let i in companies) {
+		const company = companies[i]
 
-async function getCompanies(): Promise<LandingJobsCompany[]> {
-	const params: LandingJobsApiParams = { offset: 0 }
-	let companies: LandingJobsCompany[] = []
+		let response = await (await axios.get<LandingJobsJob[]>(COMPANIES_URL + company.id + COMPANIES_URL_JOBS, { params }));
 
-	var response = await axios.get<LandingJobsCompany[]>(COMPANIES_URL, { params })
-	while (response.data.length != 0) {
-		companies = companies.concat(response.data)
-		params.offset += MAX_LIMIT_RESULTS_API;
-		response = await axios.get<LandingJobsCompany[]>(COMPANIES_URL, { params })
-		// FIXME: Remove log
-		console.log(companies)
+		while (response.data.length != 0) {
+			jobs = jobs.concat(await renameCompany(response.data, company));
+			params.offset += params.limit;
+			response = await (await axios.get<LandingJobsJob[]>(COMPANIES_URL + company.id + COMPANIES_URL_JOBS, { params }));
+		}
 	}
-	return companies
+	return jobs;
 }
 
-async function getJobsOfCompanies(companies: LandingJobsCompany[]): Promise<LandingJobsJob[]> {
-	const companyIds = companies.map(company => company.id);
+async function renameCompany(jobs: LandingJobsJob[], company: LandingJobsCompany): Promise<LandingJobsJobWithCompanyName[]> {
+	const jobsWithCompany = jobs.map((job) => {
+		const { id, city, country_code, country_name,
+			currency_code, expires_at, nice_to_have,
+			perks, published_at, reward, remote, relocation_paid,
+			role_description, salary_low, salary_high, title,
+			work_from_home, created_at, updated_at, type, tags } = job;
 
-	const params: LandingJobsApiParams = { offset: 0 }
-	let jobs: LandingJobsJob[] = []
+		const jobWithCompany: LandingJobsJobWithCompanyName = {
+			id, city, company: company.name,
+			country_code, country_name, currency_code,
+			expires_at, nice_to_have, perks,
+			published_at, reward, remote,
+			relocation_paid, role_description, salary_low,
+			salary_high, 'successful?': job["successful?"],
+			title, work_from_home, created_at,
+			updated_at, type, tags,
+		}
+		return jobWithCompany;
+	});
 
-	var response = await axios.get<LandingJobsJob[]>(JOBS_URL, { params })
-	while (response.data.length != 0) {
-		jobs = jobs.concat(response.data)
-		params.offset += MAX_LIMIT_RESULTS_API;
-		response = await axios.get<LandingJobsJob[]>(JOBS_URL, { params })
-		// FIXME: Remove log
-		console.log(jobs)
-	}
-	return jobs
+	return jobsWithCompany;
 }
