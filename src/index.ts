@@ -9,6 +9,7 @@ const everySecond = "* * * * * *";
 const every10minutes = "* 10 * * * *";
 
 const kafka_host = "localhost:9092";
+const kafkaClientId = "landingjobs-producer";
 const topic = "topic1"
 
 
@@ -41,6 +42,6 @@ export async function fetchAndProduceData() {
 /**
  * Start process
  */
-initKafka(kafka_host)
+initKafka(kafka_host, kafkaClientId)
 fetchAndProduceData()
 // executeByCron(every10minutes, fetchAndProduceData);

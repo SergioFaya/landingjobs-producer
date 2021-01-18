@@ -2,9 +2,9 @@ import { Kafka, Message } from "kafkajs";
 
 var kafka: Kafka;
 
-export const initKafka = (kafkaHost: string) => {
+export const initKafka = (kafkaHost: string, kafkaClientId: string) => {
 	kafka = new Kafka({
-		clientId: 'landingjobs-producer',
+		clientId: kafkaClientId,
 		brokers: [].concat(kafkaHost)
 	})
 }
