@@ -26,7 +26,9 @@
 	"dependencies": {
 		"@types/cron": "^1.7.2",
 		"axios": "^0.21.1",
+		"command-line-args": "^5.1.1",
 		"cron": "^1.8.2",
+		"dotenv": "^8.2.0",
 		"kafkajs": "^1.15.0"
 	}
 }

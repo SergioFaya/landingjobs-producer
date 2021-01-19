@@ -1,3 +1,4 @@
+import './preStart'; // Must be the first import
 import { executeByCron } from "./service/CronService"
 import { produceToTopic } from "./kafka/LandingJobsProducer"
 import { getCompanies, getJobsOfCompanies } from "./service/JobsManager"
@@ -5,13 +6,21 @@ import { initKafka } from "./kafka/LandingJobsProducer"
 import { LandingJobsApiParams, MAX_LIMIT_RESULTS_API } from "./entity/LandingJobsApiParams";
 
 // https://crontab.cronhub.io/
-const everySecond = "* * * * * *";
-const every10minutes = "* 10 * * * *";
+// const everySecond = "* * * * * *";
+// const every10minutes = "* 10 * * * *";
 
-const kafka_host = "localhost:9092";
-const kafkaClientId = "landingjobs-producer";
-const topic = "topic1"
 
+const kafkaHost = process.env.KAFKA_HOST;
+const kafkaClientId = process.env.APP_ID;
+const cronExpression = process.env.CRON_EXPRESSION;
+const topic = process.env.PRODUCE_TO_TOPIC
+
+console.log("PRODUCER CONFIG", {
+	KAFKA_HOST: kafkaHost,
+	APP_ID: kafkaClientId,
+	CRON_EXPRESSION: cronExpression,
+	PRODUCE_TO_TOPIC: topic
+})
 
 /**
  * Process definition
@@ -30,7 +39,6 @@ export async function fetchAndProduceData() {
 		const jobs = await getJobsOfCompanies(companies, paramsJobs)
 
 		const jsonMessages = await jobs.map((job) => { return JSON.stringify(job) });
-		console.log(jsonMessages)
 		produceToTopic(jsonMessages, topic);
 
 		paramsJobs.offset = 0;
@@ -42,6 +50,6 @@ export async function fetchAndProduceData() {
 /**
  * Start process
  */
-initKafka(kafka_host, kafkaClientId)
+initKafka(kafkaHost, kafkaClientId)
 fetchAndProduceData()
-// executeByCron(every10minutes, fetchAndProduceData);
+executeByCron(cronExpression, fetchAndProduceData);

@@ -24,5 +24,8 @@ export const produceToTopic = async (messages: string[], topic: string) => {
 		topic: topic,
 		messages: formattedMessages,
 	})
+		.then(() => console.log(`Produced messages: ${messages} \n`))
+		.catch(err => console.error(`Error when producing: ${err} \n`))
+
 	await producer.disconnect()
 }
