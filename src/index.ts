@@ -1,8 +1,8 @@
 import './preStart'; // Must be the first import
-import { executeByCron } from "./service/CronService"
-import { produceToTopic } from "./kafka/LandingJobsProducer"
-import { getCompanies, getJobsOfCompanies } from "./service/JobsManager"
-import { initKafka } from "./kafka/LandingJobsProducer"
+import { executeByCron } from "./service/CronExecutor"
+import { produceToTopic } from "./kafka/KafkaConnector"
+import { getCompanies, getJobsOfCompanies } from "./service/Fetcher"
+import { initKafka } from "./kafka/KafkaConnector"
 import { LandingJobsApiParams, MAX_LIMIT_RESULTS_API } from "./entity/LandingJobsApiParams";
 
 // https://crontab.cronhub.io/
