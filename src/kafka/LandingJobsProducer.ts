@@ -1,5 +1,5 @@
 import { Kafka, Message } from "kafkajs";
-
+import { logger } from '../logger/Logger'
 var kafka: Kafka;
 
 export const initKafka = (kafkaHost: string, kafkaClientId: string) => {
@@ -8,6 +8,13 @@ export const initKafka = (kafkaHost: string, kafkaClientId: string) => {
 		brokers: [].concat(kafkaHost)
 	})
 }
+
+function logMessages(messages) {
+	messages.forEach(element => {
+		logger.info(element)
+	});
+}
+
 
 export const produceToTopic = async (messages: string[], topic: string) => {
 	const producer = kafka.producer()
@@ -24,7 +31,10 @@ export const produceToTopic = async (messages: string[], topic: string) => {
 		topic: topic,
 		messages: formattedMessages,
 	})
-		.then(() => console.log(`Produced messages: ${messages} \n`))
+		.then(() => {
+			console.log(`Produced messages: ${messages} \n`);
+			logMessages(messages)
+		})
 		.catch(err => console.error(`Error when producing: ${err} \n`))
 
 	await producer.disconnect()
