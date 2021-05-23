@@ -23,4 +23,5 @@ export interface LandingJobsJobWithCompany {
 	updated_at: string;
 	type: string;
 	tags: string[];
+	url: string;
 }

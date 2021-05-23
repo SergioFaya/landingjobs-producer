@@ -22,7 +22,6 @@ export async function getJobsOfCompanies(companies: LandingJobsCompany[], params
 		const company = companies[i]
 
 		let response = await (await axios.get<LandingJobsJob[]>(COMPANIES_URL + company.id + COMPANIES_URL_JOBS, { params }));
-
 		while (response.data.length != 0) {
 			jobs = jobs.concat(await renameCompany(response.data, company));
 			params.offset += params.limit;
@@ -38,7 +37,7 @@ async function renameCompany(jobs: LandingJobsJob[], company: LandingJobsCompany
 			currency_code, expires_at, nice_to_have,
 			perks, published_at, reward, remote, relocation_paid,
 			role_description, salary_low, salary_high, title,
-			work_from_home, created_at, updated_at, type, tags } = job;
+			work_from_home, created_at, updated_at, type, tags, url } = job;
 
 		const jobWithCompany: LandingJobsJobWithCompany = {
 			id, city, company: company.name,
@@ -49,7 +48,7 @@ async function renameCompany(jobs: LandingJobsJob[], company: LandingJobsCompany
 			relocation_paid, role_description, salary_low,
 			salary_high, 'successful?': job["successful?"],
 			title, work_from_home, created_at,
-			updated_at, type, tags,
+			updated_at, type, tags, url
 		}
 		return jobWithCompany;
 	});
