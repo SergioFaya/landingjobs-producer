@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { LandingJobsApiParams, MAX_LIMIT_RESULTS_API } from "../entity/LandingJobsApiParams";
 import { LandingJobsJob } from "../entity/LandingJobsJob";
-import { LandingJobsJobWithCompanyName } from "../entity/LandingJobsJobWithCompanyName";
+import { LandingJobsJobWithCompany } from "../entity/LandingJobsJobWithCompany";
 
 /**
  * Gets the information about the jobs and companies
@@ -16,8 +16,8 @@ export async function getCompanies(params: LandingJobsApiParams): Promise<Landin
 	return await (await axios.get<LandingJobsCompany[]>(COMPANIES_URL, { params })).data
 }
 
-export async function getJobsOfCompanies(companies: LandingJobsCompany[], params: LandingJobsApiParams): Promise<LandingJobsJobWithCompanyName[]> {
-	let jobs: LandingJobsJobWithCompanyName[] = []
+export async function getJobsOfCompanies(companies: LandingJobsCompany[], params: LandingJobsApiParams): Promise<LandingJobsJobWithCompany[]> {
+	let jobs: LandingJobsJobWithCompany[] = []
 	for (let i in companies) {
 		const company = companies[i]
 
@@ -32,7 +32,7 @@ export async function getJobsOfCompanies(companies: LandingJobsCompany[], params
 	return jobs;
 }
 
-async function renameCompany(jobs: LandingJobsJob[], company: LandingJobsCompany): Promise<LandingJobsJobWithCompanyName[]> {
+async function renameCompany(jobs: LandingJobsJob[], company: LandingJobsCompany): Promise<LandingJobsJobWithCompany[]> {
 	const jobsWithCompany = jobs.map((job) => {
 		const { id, city, country_code, country_name,
 			currency_code, expires_at, nice_to_have,
@@ -40,8 +40,9 @@ async function renameCompany(jobs: LandingJobsJob[], company: LandingJobsCompany
 			role_description, salary_low, salary_high, title,
 			work_from_home, created_at, updated_at, type, tags } = job;
 
-		const jobWithCompany: LandingJobsJobWithCompanyName = {
+		const jobWithCompany: LandingJobsJobWithCompany = {
 			id, city, company: company.name,
+			company_logo_url: company.logo_url,
 			country_code, country_name, currency_code,
 			expires_at, nice_to_have, perks,
 			published_at, reward, remote,

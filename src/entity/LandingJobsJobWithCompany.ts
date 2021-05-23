@@ -1,7 +1,8 @@
-export interface LandingJobsJobWithCompanyName {
+export interface LandingJobsJobWithCompany {
 	id: number;
 	city: string;
 	company: string;
+	company_logo_url: string;
 	country_code: string;
 	country_name: string;
 	currency_code: string;
