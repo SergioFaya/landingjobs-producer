@@ -27,6 +27,10 @@ console.log("PRODUCER CONFIG", {
  */
 const companiesLimit = 20;
 
+export type JsonMessage = {
+	message: string;
+	id: string;
+}
 export async function fetchAndProduceData() {
 	const paramsJobs: LandingJobsApiParams = { offset: 0, limit: MAX_LIMIT_RESULTS_API }
 	const paramsCompanies: LandingJobsApiParams = { offset: 0, limit: companiesLimit }
@@ -38,7 +42,7 @@ export async function fetchAndProduceData() {
 
 		const jobs = await getJobsOfCompanies(companies, paramsJobs)
 
-		const jsonMessages = await jobs.map((job) => { return JSON.stringify(job) });
+		const jsonMessages = await jobs.map((job) => { return { message: JSON.stringify(job), id: job.id.toString() } as JsonMessage });
 		produceToTopic(jsonMessages, topic);
 
 		paramsJobs.offset = 0;

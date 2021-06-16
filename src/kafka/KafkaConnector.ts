@@ -1,4 +1,5 @@
 import { Kafka, Message } from "kafkajs";
+import { JsonMessage } from "..";
 import { logger } from '../logger/Logger'
 var kafka: Kafka;
 
@@ -16,12 +17,13 @@ function logMessages(messages) {
 }
 
 
-export const produceToTopic = async (messages: string[], topic: string) => {
+export const produceToTopic = async (messages: JsonMessage[], topic: string) => {
 	const producer = kafka.producer()
 
 	const formattedMessages = messages.map((message) => {
 		const mes: Message = {
-			value: message
+			key: message.id,
+			value: message.message
 		}
 		return mes
 	});
@@ -32,7 +34,7 @@ export const produceToTopic = async (messages: string[], topic: string) => {
 		messages: formattedMessages,
 	})
 		.then(() => {
-			console.log(`Produced messages: ${messages} \n`);
+			console.log(`Produced messages: ${JSON.stringify(messages)} \n`);
 			logMessages(messages)
 		})
 		.catch(err => console.error(`Error when producing: ${err} \n`))
